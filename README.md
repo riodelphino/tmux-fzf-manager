@@ -1,16 +1,17 @@
-# tmux-session-manager
+# tmux-window-manager
 
-A fuzzy terminal popup to manage tmux sessions using `fzf`.
-![tmux session manager popup](./assets/session-manager.png)
+Inspired by the original project: [santoshxshrestha/tmux-session-manager](https://github.com/santoshxshrestha/tmux-session-manager)
 
-![tmux session creator popup](./assets/session-creator.png)
+A fuzzy terminal popup to manage tmux windows using `fzf`.
+![tmux windows manager popup](./assets/window-manager.png)
 
-Just a simple and fast session manager for tmux — available as a plugin or standalone. It opens a popup using `fzf` where you can:
+![tmux window creator popup](./assets/window-creator.png) (Not implemented yet)
 
-- View all other sessions (excluding your current one)
-- See how many windows each has
+Just a simple and fast window manager for tmux — available as a plugin or standalone. It opens a popup using `fzf` where you can:
+
+- View all windows (or excluding your current one)
 - Switch to it or kill it with a keybind
-- Create new-session and switch to the newly create session
+- Create new-window and switch to the newly create window
 
 ---
 
@@ -29,7 +30,7 @@ Just a simple and fast session manager for tmux — available as a plugin or sta
 1. Add plugin to your `~/.tmux.conf`:
 
 ```bash
-set -g @plugin 'santoshxshrestha/tmux-session-manager'
+set -g @plugin 'riodelphino/tmux-window-manager'
 ```
 
 2. Press `prefix` + `I` to install
@@ -39,52 +40,16 @@ set -g @plugin 'santoshxshrestha/tmux-session-manager'
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/santoshxshrestha/tmux-session-manager ~/.tmux/plugins/tmux-session-manager
+git clone https://github.com/riodelphino/tmux-window-manager ~/.tmux/plugins/tmux-window-manager
 ```
 
 2. Add to your `~/.tmux.conf`:
 
 ```bash
-run-shell ~/.tmux/plugins/tmux-session-manager/tmux-session-manager.tmux
+run-shell ~/.tmux/plugins/tmux-window-manager/tmux-window-manager.tmux
 ```
 
 3. Reload tmux config:
-
-```bash
-tmux source-file ~/.tmux.conf
-```
-
-### Quick Install (Standalone)
-
-Add these lines to your ~/.tmux.conf:
-
-```bash
- bind j display-popup -E -w 80% -h 60% -T ' tmux-session-manager ' '
-  tmux list-sessions -F "#{session_name}|#{session_windows}|#{?session_attached,attached,detached}" |
-  grep -v "^$(tmux display-message -p "#S")|" |
-  awk -F"|" "{
-    status = (\$3 == \"attached\") ? \"\" : \"\"
-    printf \"%-20s %s %2s windows %s\\n\", \$1, status, \$2, \"\"
-  }" |
-  fzf --reverse \
-      --prompt="-> " \
-      --header="═══ Session Switcher ═══ | Ctrl-R: refresh | Ctrl-D: delete | Ctrl-N: new-session" \
-      --header-first \
-      --border=rounded \
-      --color="header:italic" \
-      --preview="tmux list-windows -t {1} -F \"  #{window_index}: #{window_name} #{?window_active,(active),}\"" \
-      --preview-window="right:40%:wrap" \
-      --bind="ctrl-r:reload(tmux list-sessions -F \"#{session_name}|#{session_windows}|#{?session_attached,attached,detached}\" | grep -v \"^\$(tmux display-message -p \"#S\")|\" | awk -F\"|\" \"{status = (\\\$3 == \\\"attached\\\") ? \\\"\\\" : \\\"\\\"; printf \\\"%-20s %s %2s windows %s\\\\n\\\", \\\$1, status, \\\$2, \\\"\\\"}\")" \
-      --bind="ctrl-d:execute(tmux kill-session -t {1})+reload(tmux list-sessions -F \"#{session_name}|#{session_windows}|#{?session_attached,attached,detached}\" | grep -v \"^\$(tmux display-message -p \"#S\")|\" | awk -F\"|\" \"{status = (\\\$3 == \\\"attached\\\") ? \\\"\\\" : \\\"\\\"; printf \\\"%-20s %s %2s windows %s\\\\n\\\", \\\$1, status, \\\$2, \\\"\\\"}\")" \
-      --bind="ctrl-n:execute(bash -c '\''echo -n -e \"== New tmux Session === \n Session Name ->  \" && read name && [ -n \"\$name\" ] && tmux new-session -d -s \"\$name\" 2>/dev/null && tmux switch-client -t \"\$name\"'\'')+abort" \
-      --info=inline \
-      --layout=reverse |
-  awk "{print \$1}" |
-  xargs -r tmux switch-client -t
-'
-```
-
-Then reload your tmux config:
 
 ```bash
 tmux source-file ~/.tmux.conf
@@ -94,48 +59,56 @@ tmux source-file ~/.tmux.conf
 
 ### Default Key Binding
 
-- **Press `prefix` + `j`** to open the session manager
+- **Press `prefix` + `w`** to open the window manager
 
 ### Custom Key Binding
 
 Add to your `~/.tmux.conf` to change the default key:
 
 ```bash
-set -g @session_manager_key 'S'  # Use 'S' instead of 'j'
+set -g @window_manager_key 'W'  # Use 'W' instead of 'w'
+```
+
+### Include current window
+
+To include current window to the list:
+
+```bash
+set -g @window_manager_include_current 1  # 0:Exclude(Default) / 1:Include
 ```
 
 ### Controls
 
 Once opened:
 
-- **Type to search** - Fuzzy find sessions by name
-- **Enter** - Switch to selected session
-- **Ctrl-R** - Refresh the session list
-- **Ctrl-D** - Delete the selected session
-- **Ctrl-N** - Create new-session and switch-client to newly created session
-- **Esc** - Close without switching session
+- **Type to search** - Fuzzy find windows by name
+- **Enter** - Switch to selected window
+- **Ctrl-R** - Refresh the window list
+- **Ctrl-D** - Delete the selected window
+- **Ctrl-A** - Create new-window and switch-client to newly created window
+- **Esc** - Close without switching window
 
 ## Customization
 
 ### Available Options
 
 ```bash
-# Key binding (default: 'j')
-set -g @session_manager_key 'j'
+# Key binding (default: 'w')
+set -g @window_manager_key 'w'
 ```
 
 ### Manual Customization (Standalone)
 
-Want to change the keybinding? Replace `j` with your preferred key:
+Want to change the keybinding? Replace `w` with your preferred key:
 
 ```bash
-bind j display-popup -E -w 80% -h 60% -T 'tmux-session-manager' '
+bind W display-popup -E -w 80% -h 60% -T 'tmux-window-manager' '
 ```
 
 Want a different popup size? Adjust the `-w` and `-h` values:
 
 ```bash
-bind j display-popup -E -w <width> -h <height> -T 'tmux-session-manager' '
+bind w display-popup -E -w <width> -h <height> -T 'tmux-window-manager' '
 ```
 
 ## Troubleshooting
@@ -150,26 +123,35 @@ bind j display-popup -E -w <width> -h <height> -T 'tmux-session-manager' '
 - Install fzf: `brew install fzf` or `apt install fzf`
 - Or follow the [official fzf installation guide](https://github.com/junegunn/fzf#installation)
 
-**No sessions to switch to?**
+**No windows to switch to?**
 
-- The manager only shows _other_ sessions (not your current one)
-- Create more sessions: `tmux new-session -d -s mysession`
+- As default, The manager only shows _other_ windows (not your current one)
+- Create more windows: `tmux new-window`
 
 **Key binding conflicts?**
 
-If `prefix + j` conflicts with existing bindings, change it:
+If `prefix + w` conflicts with existing bindings, change it:
 
 ```bash
-set -g @session_manager_key 'your-preferred-key'
+set -g @window_manager_key 'your-preferred-key'
 ```
 
 ## 🤝 Contributing
 
 Found a bug or have a feature idea? Feel free to open an issue or submit a PR!
 
+## TODO
+
+- Replace the images to tmux-window-manager's ones.
+- Add options for keybindings in fzf
+
+
 ## License
 
 MIT License - [LICENSE](LICENSE) feel free to use this however you want!
+
+This project is based on:
+[santoshxshrestha/tmux-session-manager](https://github.com/santoshxshrestha/tmux-session-manager)
 
 ---
 
