@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
-include_current=$(tmux show-option -ggv "@window_manager_include_current")
+include_current=$(tmux show-option -ggv "@fzf_manager_include_current")
 include_current=${include_current:-0}
 
-current_session=$(tmux display-message -p '#S')
 current_index=$(tmux display-message -p '#I')
 
 window_format='#{window_index}|#{window_name} #{?window_active,(active),}'
-pane_format='#{pane_index}: /#{b:pane_current_path} #{?pane_active,(active),}'
+pane_preview='#{pane_index}: /#{b:pane_current_path} #{?pane_active,(active),}'
 key_reload='ctrl-r'
 key_delete='ctrl-d'
 key_add='ctrl-a'
@@ -24,12 +23,12 @@ list_windows() {
 list_windows |
    fzf --reverse \
       --delimiter='|' \
-      --with-nth=2 \
+      --with-nth='{2}' \
       --prompt='-> ' \
       --header='═══ Window Switcher ═══ | Ctrl-R: reload | Ctrl-D: delete | Ctrl-A: add' \
       --header-first \
       --border=rounded \
-      --preview="tmux list-panes -t {1} -F '$pane_format'" \
+      --preview="tmux list-panes -t {1} -F '$pane_preview'" \
       --preview-window='right:40%:wrap' \
       --bind "$key_reload:reload(list_windows)" \
       --bind "$key_delete:execute(tmux kill-window -t {1})+reload(list_windows)" \

@@ -1,17 +1,17 @@
-# tmux-window-manager
+# tmux-fzf-manager
 
 Inspired by the original project: [santoshxshrestha/tmux-session-manager](https://github.com/santoshxshrestha/tmux-session-manager)
 
-A fuzzy terminal popup to manage tmux windows using `fzf`.
-![tmux windows manager popup](./assets/window-manager.png)
+A fuzzy terminal popup to manage tmux sessions/windows/panes using `fzf`.
+![tmux windows manager popup](./assets/fzf-manager.png)
 
-![tmux window creator popup](./assets/window-creator.png) (Not implemented yet)
+![tmux window creator popup](./assets/fzf-creator.png) (Not implemented yet)
 
 Just a simple and fast window manager for tmux — available as a plugin or standalone. It opens a popup using `fzf` where you can:
 
-- View all windows (or excluding your current one)
+- View all sessions/windows/panes (or excluding your current one)
 - Switch to it or kill it with a keybind
-- Create new-window and switch to the newly create window
+- Create new session/window/pane and switch to the newly create one
 
 ---
 
@@ -30,7 +30,7 @@ Just a simple and fast window manager for tmux — available as a plugin or stan
 1. Add plugin to your `~/.tmux.conf`:
 
 ```bash
-set -g @plugin 'riodelphino/tmux-window-manager'
+set -g @plugin 'riodelphino/tmux-fzf-manager'
 ```
 
 2. Press `prefix` + `I` to install
@@ -40,13 +40,13 @@ set -g @plugin 'riodelphino/tmux-window-manager'
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/riodelphino/tmux-window-manager ~/.tmux/plugins/tmux-window-manager
+git clone https://github.com/riodelphino/tmux-fzf-manager ~/.tmux/plugins/tmux-fzf-manager
 ```
 
 2. Add to your `~/.tmux.conf`:
 
 ```bash
-run-shell ~/.tmux/plugins/tmux-window-manager/tmux-window-manager.tmux
+run-shell ~/.tmux/plugins/tmux-fzf-manager/tmux-fzf-manager.tmux
 ```
 
 3. Reload tmux config:
@@ -59,57 +59,49 @@ tmux source-file ~/.tmux.conf
 
 ### Default Key Binding
 
+- **Press `prefix` + `s`** to open the session manager
 - **Press `prefix` + `w`** to open the window manager
+- **Press `prefix` + `P`** to open the pane manager
 
 ### Custom Key Binding
 
 Add to your `~/.tmux.conf` to change the default key:
 
 ```bash
-set -g @window_manager_key 'W'  # Use 'W' instead of 'w'
+set -g @fzf_manager_key_session 's'
+set -g @fzf_manager_key_window 'w'
+set -g @fzf_manager_key_pane 'P'
 ```
 
-### Include current window
+### Include current one
 
-To include current window to the list:
+To include current session/window/pane to the list:
 
 ```bash
-set -g @window_manager_include_current 1  # 0:Exclude(Default) / 1:Include
+set -g @fzf_manager_include_current 1  # 0:Exclude(Default) / 1:Include
+```
+
+### Popup
+
+Popup config:
+
+```bash
+set -g @fzf_manager_width '80%'
+set -g @fzf_manager_height '60%'
 ```
 
 ### Controls
 
 Once opened:
 
-- **Type to search** - Fuzzy find windows by name
-- **Enter** - Switch to selected window
-- **Ctrl-R** - Refresh the window list
-- **Ctrl-D** - Delete the selected window
-- **Ctrl-A** - Create new-window and switch-client to newly created window
-- **Esc** - Close without switching window
+- **Type to search** - Fuzzy find sessions/windows/panes by name
+- **Enter** - Switch to selected session/window/pane
+- **Ctrl-R** - Refresh the session/window/pane list
+- **Ctrl-D** - Delete the selected one
+- **Ctrl-A** - Create new session/window/pane and switch to newly created one
+- **Esc** - Close without switching
 
-## Customization
 
-### Available Options
-
-```bash
-# Key binding (default: 'w')
-set -g @window_manager_key 'w'
-```
-
-### Manual Customization (Standalone)
-
-Want to change the keybinding? Replace `w` with your preferred key:
-
-```bash
-bind W display-popup -E -w 80% -h 60% -T 'tmux-window-manager' '
-```
-
-Want a different popup size? Adjust the `-w` and `-h` values:
-
-```bash
-bind w display-popup -E -w <width> -h <height> -T 'tmux-window-manager' '
-```
 
 ## Troubleshooting
 
@@ -123,17 +115,17 @@ bind w display-popup -E -w <width> -h <height> -T 'tmux-window-manager' '
 - Install fzf: `brew install fzf` or `apt install fzf`
 - Or follow the [official fzf installation guide](https://github.com/junegunn/fzf#installation)
 
-**No windows to switch to?**
+**No sessions/windows/panes to switch to?**
 
-- As default, The manager only shows _other_ windows (not your current one)
-- Create more windows: `tmux new-window`
+- As default, The manager only shows _other_ sessions/windows/panes (not your current one)
+- Create more sessions/windows/panes: `tmux new-session` or `tmux new-window` or `tmux split-window`
 
 **Key binding conflicts?**
 
 If `prefix + w` conflicts with existing bindings, change it:
 
 ```bash
-set -g @window_manager_key 'your-preferred-key'
+set -g @fzf_manager_key 'your-preferred-key'
 ```
 
 ## 🤝 Contributing
@@ -142,8 +134,8 @@ Found a bug or have a feature idea? Feel free to open an issue or submit a PR!
 
 ## TODO
 
-- Replace the images to tmux-window-manager's ones.
-- Add options for keybindings in fzf
+- Replace the images to tmux-fzf-manager's ones.
+- Enable `pane.sh`
 
 
 ## License
